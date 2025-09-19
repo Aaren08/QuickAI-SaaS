@@ -27,3 +27,134 @@ button {
   border: none;
   outline: none;
 }
+
+@layer components {
+  .fancy-btn {
+    @apply relative z-0 rounded-[10px] px-8 py-3 text-white bg-[#111] select-none touch-manipulation;
+  }
+
+  .fancy-btn::before {
+    content: "";
+    background: linear-gradient(
+      45deg,
+      #ff0000,
+      #ff7300,
+      #fffb00,
+      #48ff00,
+      #00ffd5,
+      #002bff,
+      #7a00ff,
+      #ff00c8,
+      #ff0000
+    );
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing-fancy-btn 20s linear infinite;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+  }
+
+  .fancy-btn::after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #222;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+  }
+
+  @keyframes glowing-fancy-btn {
+    0% {
+      background-position: 0 0;
+    }
+    50% {
+      background-position: 400% 0;
+    }
+    100% {
+      background-position: 0 0;
+    }
+  }
+}
+
+/* Roaming path (mostly edges, one center visit) */
+@keyframes blob-roam {
+  0% {
+    transform: translate(5vw, 10vh) scale(1) rotate(0deg);
+  }
+  20% {
+    transform: translate(70vw, 15vh) scale(1.05) rotate(5deg);
+  }
+  40% {
+    transform: translate(80vw, 70vh) scale(0.95) rotate(-5deg);
+  }
+  60% {
+    transform: translate(40vw, 45vh) scale(1.1) rotate(8deg); /* one center-ish dip */
+  }
+  80% {
+    transform: translate(15vw, 75vh) scale(1) rotate(-3deg);
+  }
+  100% {
+    transform: translate(5vw, 10vh) scale(1) rotate(0deg);
+  }
+}
+
+/* Independent wobble (organic pulse) */
+@keyframes blob-wobble {
+  0%,
+  100% {
+    border-radius: 45% 55% 60% 40% / 50% 40% 60% 50%;
+  }
+  50% {
+    border-radius: 60% 40% 50% 50% / 55% 65% 35% 45%;
+  }
+}
+
+/* Liquid gradient flow */
+@keyframes blob-colors {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.roaming-blob {
+  /* Base size + blur for softness */
+  width: 22vw;
+  height: 22vw;
+  border-radius: 50%;
+  opacity: 0.7;
+  mix-blend-mode: multiply;
+  filter: blur(80px);
+
+  /* Water-like gradient with overlapping stops */
+  background: linear-gradient(
+    270deg,
+    #a855f7,
+    #ec4899,
+    #6366f1,
+    #eedd98,
+    #f97316,
+    #ef4444,
+    #a855f7
+  );
+  background-size: 600% 600%;
+
+  /* Animations combined */
+  animation: blob-roam 55s ease-in-out infinite,
+    blob-wobble 12s ease-in-out infinite, blob-colors 60s ease-in-out infinite;
+}
