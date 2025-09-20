@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import BlobBackground from "./BlobBackground";
 import { assets } from "../assets/assets";
 
 const Hero = () => {
@@ -6,11 +7,11 @@ const Hero = () => {
   return (
     <div className="relative inline-flex flex-col w-full h-full justify-center px-4 sm:px-20 xl:px-32 bg-[url(/gradientBackground.png)] bg-cover bg-no-repeat min-h-screen">
       <div className="text-center mb-12">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl 2xl:text-7xl font-semibold mx-auto leading-[1.2]">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl 2xl:text-7xl font-semibold mx-auto leading-[1.2]">
           Create amazing content <br /> with{" "}
           <span className="text-[var(--color-primary)]">AI tools</span>
         </h1>
-        <p className="mt-4 text-lg max-w-xs sm:max-w-lg m-auto max-sm:text-xs 2xl:max-w-xl text-gray-600">
+        <p className="mt-4 text-lg max-sm:text-sm sm:max-w-lg m-auto 2xl:max-w-xl text-gray-600">
           Transform your content creation with our suite of premium AI tools.
           Write articles, generate images and enhance your workflow.
         </p>
@@ -29,6 +30,7 @@ const Hero = () => {
         <img src={assets.user_group} alt="users" className="h-8" />
         <span>Trusted by 10k+ users</span>
       </div>
+      <BlobBackground />
     </div>
   );
 };

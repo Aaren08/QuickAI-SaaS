@@ -21,10 +21,14 @@ const Navbar = () => {
       ) : (
         <button
           onClick={openSignIn}
-          className="group flex items-center gap-2 justify-center bg-[var(--color-primary)] text-white py-2 px-4 rounded-full hover:scale-105 active:scale-95 transition-all"
+          className="group flex items-center gap-2 justify-center 
+             bg-[var(--color-primary)] text-white 
+             py-1.5 px-3 text-sm 
+             sm:py-2 sm:px-4 sm:text-base
+             rounded-full hover:scale-105 active:scale-95 transition-all"
         >
           <span>Get Started</span>
-          <ArrowRight className="w-4 h-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transform transition-transform duration-300 group-hover:translate-x-1" />
         </button>
       )}
     </div>

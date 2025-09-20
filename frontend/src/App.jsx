@@ -1,4 +1,5 @@
 import { Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home.jsx";
 import Layout from "./pages/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="review-resume" element={<ReviewResume />} />
         </Route>
       </Routes>
+      <Toaster />
     </div>
   );
 };

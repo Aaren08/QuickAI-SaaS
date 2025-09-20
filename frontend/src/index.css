@@ -8,6 +8,7 @@
 body {
   margin: 0;
   padding: 0;
+  background-color: #f4f4f4;
 }
 
 :root {
@@ -147,9 +148,9 @@ button {
     #a855f7,
     #ec4899,
     #6366f1,
-    #eedd98,
-    #f97316,
-    #ef4444,
+    #c2c2c1,
+    #f7b484,
+    #fcc0c0,
     #a855f7
   );
   background-size: 600% 600%;
