@@ -87,6 +87,15 @@ button {
   }
 }
 
+.reset-tw,
+.reset-tw * {
+  all: revert !important;
+}
+
+.cl-drawerRoot {
+  z-index: 10;
+}
+
 /* Roaming path (mostly edges, one center visit) */
 @keyframes blob-roam {
   0% {
