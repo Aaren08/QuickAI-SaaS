@@ -5,6 +5,7 @@ import colors from "colors";
 import { clerkMiddleware, requireAuth } from "@clerk/express";
 import aiRouter from "./routes/aiRoutes.js";
 import connectCloudinary from "./configs/cloudinary.js";
+import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(requireAuth());
 
 // ROUTES
 app.use("/api/ai", aiRouter);
+app.use("/api/user", userRouter);
 
 // PORT
 const PORT = process.env.PORT || 5000;
