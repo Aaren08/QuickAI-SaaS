@@ -20,6 +20,7 @@ export const generateArticle = async (req, res) => {
     const { prompt, length } = req.body;
     const plan = req.plan;
     const free_usage = req.free_usage;
+    const tokenEstimate = Math.round(length * 1.8); // ~1.8 tokens per word
 
     if (plan !== "premium" && free_usage >= 10) {
       return res.status(400).json({
@@ -37,7 +38,7 @@ export const generateArticle = async (req, res) => {
         },
       ],
       temperature: 0.7,
-      max_tokens: 100,
+      max_tokens: tokenEstimate,
     });
 
     const content = response.choices[0].message.content;
@@ -82,7 +83,7 @@ export const generateBlogTitle = async (req, res) => {
         },
       ],
       temperature: 0.7,
-      max_tokens: 100,
+      max_tokens: 500,
     });
 
     const content = response.choices[0].message.content;
@@ -147,11 +148,11 @@ export const generateImage = async (req, res) => {
   }
 };
 
-// FUNCTION TO REMOVE IMAGE BACKGROUNDS
+// FUNCTION TO REMOVE IMAGE BACKGROUND
 export const removeImageBackground = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { image } = req.file;
+    const image = req.file;
     const plan = req.plan;
 
     if (plan !== "premium") {
@@ -184,8 +185,8 @@ export const removeImageBackground = async (req, res) => {
 export const removeObjectsFromImage = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const { object } = req.auth();
-    const { image } = req.file;
+    const { object } = req.body;
+    const image = req.file;
     const plan = req.plan;
 
     if (plan !== "premium") {
@@ -199,7 +200,7 @@ export const removeObjectsFromImage = async (req, res) => {
     const imageURL = cloudinary.url(public_id, {
       transformation: [
         {
-          effect: `remove_object:${object}`,
+          effect: `gen_remove:${object}`,
         },
       ],
       resource_type: "image",
@@ -208,7 +209,7 @@ export const removeObjectsFromImage = async (req, res) => {
     await sql`INSERT INTO creations (user_id, prompt, content, type) 
     VALUES (${userId}, ${`Removed ${object} from image`}, ${imageURL}, 'image')`;
 
-    res.json({ success: true, content: secure_url });
+    res.json({ success: true, content: imageURL });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ success: false, message: error.message });
@@ -220,17 +221,23 @@ const extractResumeText = async (resume) => {
   const ext = path.extname(resume.originalname).toLowerCase();
   const dataBuffer = fs.readFileSync(resume.path);
 
-  if (ext === ".pdf") {
-    const pdfDoc = await pdf(dataBuffer);
-    return pdfDoc.text;
-  } else if (ext === ".docx") {
-    const result = await mammoth.extractRawText({ path: resume.path });
-    return result.value;
-  } else if (ext === ".txt") {
-    return dataBuffer.toString("utf8");
-  } else {
+  try {
+    if (ext === ".pdf") {
+      const pdfDoc = await pdf(dataBuffer);
+      return pdfDoc.text;
+    } else if (ext === ".docx") {
+      const result = await mammoth.extractRawText({ path: resume.path });
+      return result.value;
+    } else if (ext === ".txt") {
+      return dataBuffer.toString("utf8");
+    } else {
+      throw new Error(
+        "Unsupported file format. Please upload PDF, DOCX, or TXT."
+      );
+    }
+  } catch (err) {
     throw new Error(
-      "Unsupported file format. Please upload PDF, DOCX, or TXT."
+      "Failed to read the uploaded file. Make sure it's a valid resume file and not corrupted."
     );
   }
 };
@@ -266,6 +273,41 @@ export const reviewResume = async (req, res) => {
     // Extract resume text depending on file type
     const resumeText = await extractResumeText(resume);
 
+    if (!resumeText || resumeText.trim().length < 100) {
+      return res.status(400).json({
+        success: false,
+        message: "The uploaded file does not appear to be a valid resume.",
+      });
+    }
+
+    //  Step 1: Classification before full review
+    const classifierPrompt = `Is the following text a resume/CV that contains personal work experience, education, and skills?
+    Answer only "yes" or "no".
+
+    Text:
+    ${resumeText.slice(0, 1200)}  // only the first 1200 chars for speed
+    `;
+
+    const classifierResponse = await AI.chat.completions.create({
+      model: "gemini-2.0-flash",
+      messages: [{ role: "user", content: classifierPrompt }],
+      temperature: 0,
+      max_tokens: 5,
+    });
+
+    const verdict = classifierResponse.choices[0].message.content
+      .trim()
+      .toLowerCase();
+
+    if (verdict !== "yes") {
+      return res.status(400).json({
+        success: false,
+        message:
+          "The uploaded file does not appear to be a resume. Please upload a valid CV.",
+      });
+    }
+
+    //  Step 2: Actual resume review
     const prompt = `Review the following resume and provide feedback on its strengths, weaknesses, and areas for improvement.
     Resume Content:\n\n${resumeText}`;
 
@@ -273,7 +315,7 @@ export const reviewResume = async (req, res) => {
       model: "gemini-2.0-flash",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 2000,
     });
 
     const content = response.choices[0].message.content;

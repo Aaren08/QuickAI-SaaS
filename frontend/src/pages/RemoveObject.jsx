@@ -1,11 +1,49 @@
 import { Scissors, Sparkles } from "lucide-react";
 import { useState } from "react";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-hot-toast";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+
 const RemoveObject = () => {
   const [input, setInput] = useState("");
   const [selectedObject, setSelectedObject] = useState("");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { getToken } = useAuth();
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    try {
+      setLoading(true);
+      if (selectedObject.split(",").length > 1) {
+        toast.error("Please select only one object");
+      }
+      const formData = new FormData();
+      formData.append("image", input);
+      formData.append("object", selectedObject);
+
+      const { data } = await axios.post(
+        "/api/ai/remove-image-object",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${await getToken()}`,
+          },
+        }
+      );
+      if (data.success) {
+        setContent(data.content);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,9 +65,9 @@ const RemoveObject = () => {
           <input
             type="file"
             accept="image/*"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => setInput(e.target.files[0])}
             className="w-full text-slate-500 font-medium text-sm bg-white border file:cursor-pointer cursor-pointer file:border-0 file:py-3 file:px-4 file:mr-4 file:bg-gray-100 file:hover:bg-gray-200 file:text-slate-500 rounded"
+            required
           />
           <p className="text-xs text-[#4a6aee] mt-2">
             PNG, JPG SVG, WEBP, and GIF are Allowed.
@@ -46,13 +84,21 @@ const RemoveObject = () => {
             onChange={(e) => setSelectedObject(e.target.value)}
             className="w-full p-2 text-slate-500 font-medium text-sm bg-white border border-gray-400 rounded"
             placeholder="e.g. car in background, person in foreground, etc."
+            required
           />
           <p className="text-xs text-gray-600">
             Be specific about what you want to remove
           </p>
         </div>
-        <button className="flex items-center justify-center gap-2 w-full mt-2 px-4 py-2 bg-gradient-to-r from-[#417df6] to-[#8e37eb] text-white rounded-lg">
-          <Scissors className="w-5 h-5 text-white" />
+        <button
+          disabled={loading}
+          className="flex items-center justify-center gap-2 w-full mt-2 px-4 py-2 bg-gradient-to-r from-[#417df6] to-[#8e37eb] text-white rounded-lg"
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-t-black border-gray-300 rounded-full animate-spin"></div>
+          ) : (
+            <Scissors className="w-5 h-5 text-white" />
+          )}
           Remove object
         </button>
       </form>
@@ -63,12 +109,20 @@ const RemoveObject = () => {
           <Scissors className="w-5 h-5 text-[#4a7aff]" />
           <h1 className="text-xl font-semibold">Processed Image</h1>
         </div>
-        <div className="flex-1 flex justify-center items-center">
-          <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
-            <Scissors className="w-9 h-9" />
-            <p>Upload an image and click "Remove object" to get started</p>
+        {!content ? (
+          <div className="flex-1 flex justify-center items-center">
+            <div className="text-sm flex flex-col items-center gap-5 text-gray-400">
+              <Scissors className="w-9 h-9" />
+              <p>Upload an image and click "Remove object" to get started</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <img
+            src={content}
+            alt="image"
+            className="mt-3 w-full h-full object-cover"
+          />
+        )}
       </div>
     </div>
   );

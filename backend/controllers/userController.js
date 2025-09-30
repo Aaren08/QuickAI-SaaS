@@ -41,22 +41,30 @@ export const toggleLikeAndUnlike = async (req, res) => {
     const currentLikes = creation.likes;
     const userIdStr = userId.toString();
     let updatedLikes;
-    let message;
 
     if (currentLikes.includes(userIdStr)) {
+      // UNLIKE
       updatedLikes = currentLikes.filter((like) => like !== userIdStr);
-      message = "Creation unliked.";
     } else {
+      // LIKE
       updatedLikes = [...currentLikes, userIdStr];
-      message = "Creation liked.";
     }
 
-    const formattedArray = `{${updatedLikes.json(",")}}`;
-    await sql`UPDATE creations SET likes = ${formattedArray}::text[] WHERE id = ${id}`;
+    const formattedArray = `{${updatedLikes.join(",")}}`;
 
-    res.json({ success: true, message });
+    await sql`
+      UPDATE creations 
+      SET likes = ${formattedArray}::text[] 
+      WHERE id = ${id}
+    `;
+
+    res.json({
+      success: true,
+      likes: updatedLikes,
+      id,
+    });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

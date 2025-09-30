@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
-import { useAuth } from "@clerk/clerk-react";
 import Home from "./pages/Home.jsx";
 import Layout from "./pages/Layout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
@@ -14,12 +12,6 @@ import ReviewResume from "./pages/ReviewResume.jsx";
 import Community from "./pages/Community.jsx";
 
 const App = () => {
-  const { getToken } = useAuth();
-
-  useEffect(() => {
-    getToken().then((token) => console.log(token));
-  }, [getToken]);
-
   return (
     <div>
       <Routes>

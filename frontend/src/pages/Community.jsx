@@ -1,20 +1,106 @@
 import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
-import { dummyPublishedCreationData } from "../assets/assets.js";
-import { Heart } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-hot-toast";
+import HeartLike from "../components/HeartLike.jsx";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
+
 const Community = () => {
   const [creations, setCreations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [pendingLikes, setPendingLikes] = useState(new Set());
   const { user } = useUser();
+  const { getToken } = useAuth();
 
-  const fetchCreations = async () => {
-    setCreations(dummyPublishedCreationData);
+  const fetchCreations = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/user/get-publish-creations", {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+
+      if (data.success) {
+        setCreations(data.creations);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [getToken]);
+
+  const imageLike = async (id) => {
+    // If this creation is already being processed, ignore further clicks
+    if (pendingLikes.has(id)) return;
+
+    // Mark this creation as pending
+    setPendingLikes((prev) => new Set(prev).add(id));
+
+    // Optimistic update
+    setCreations((prev) =>
+      prev.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              likes: c.likes.includes(user.id)
+                ? c.likes.filter((uid) => uid !== user.id)
+                : [...c.likes, user.id],
+            }
+          : c
+      )
+    );
+
+    try {
+      const { data } = await axios.post(
+        "/api/user/toggle-like-and-unlike",
+        { id },
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      );
+
+      if (!data.success) {
+        rollbackLike(id);
+        toast.error(data.message);
+      }
+    } catch (err) {
+      rollbackLike(id);
+      toast.error(err.response?.data?.message || err.message);
+    } finally {
+      // Remove from pending after response
+      setPendingLikes((prev) => {
+        const updated = new Set(prev);
+        updated.delete(id);
+        return updated;
+      });
+    }
+  };
+
+  // ROLLBACK HELPER
+  const rollbackLike = (id) => {
+    setCreations((prev) =>
+      prev.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              likes: c.likes.includes(user.id)
+                ? c.likes.filter((uid) => uid !== user.id)
+                : [...c.likes, user.id],
+            }
+          : c
+      )
+    );
   };
 
   useEffect(() => {
     user && fetchCreations();
-  }, [user]);
+  }, [user, fetchCreations]);
 
-  return (
+  return !loading ? (
     <div className="flex flex-1 flex-col gap-4 p-6 h-full">
       <span className="text-3xl w-fit font-semibold bg-gradient-to-r from-orange-400 to-indigo-600 bg-clip-text text-transparent">
         Creations
@@ -35,10 +121,11 @@ const Community = () => {
               <p className="text-sm hidden group-hover:block">
                 {creation.prompt}
               </p>
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center px-2 py-1 rounded-lg backdrop-blur-sm bg-white/10">
                 <p>{creation.likes.length}</p>
-                <Heart
-                  className={`min-w-5 h-5 hover:scale-110 cursor-pointer ${
+                <HeartLike
+                  onClick={() => imageLike(creation.id)}
+                  className={`cursor-pointer ${
                     creation.likes.includes(user.id)
                       ? "fill-red-500 text-red-600"
                       : "text-white"
@@ -50,6 +137,8 @@ const Community = () => {
         ))}
       </div>
     </div>
+  ) : (
+    <div className="absolute top-1/2 left-1/2 w-10 h-10 border-4 border-t-black border-gray-300 rounded-full animate-spin"></div>
   );
 };
 
