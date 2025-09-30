@@ -1,18 +1,39 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Gem, Sparkles } from "lucide-react";
 import { Protect } from "@clerk/clerk-react";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "react-hot-toast";
 import CreationItems from "../components/CreationItems.jsx";
-import { dummyCreationData } from "../assets/assets.js";
+
+axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
 const Dashboard = () => {
   const [creations, setCreations] = useState([]);
-  const getDashboardData = async () => {
-    setCreations(dummyCreationData);
-  };
+  const [loading, setLoading] = useState(true);
+  const { getToken } = useAuth();
+
+  const getDashboardData = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/user/get-user-creations", {
+        headers: {
+          Authorization: `Bearer ${await getToken()}`,
+        },
+      });
+      if (data.success) {
+        setCreations(data.creations);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [getToken]);
 
   useEffect(() => {
     getDashboardData();
-  }, []);
+  }, [getDashboardData]);
 
   return (
     <div className="h-full overflow-y-scroll p-6">
@@ -44,13 +65,17 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* RECENT CREATIONS */}
-      <div className="space-y-3">
-        <p className="mt-6 mb-4">Recent Creations</p>
-        {creations.map((item, index) => (
-          <CreationItems key={index} item={item} />
-        ))}
-      </div>
+      {loading ? (
+        <div className="absolute top-1/2 left-1/2 w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+      ) : (
+        <div className="space-y-3">
+          {/* RECENT CREATIONS */}
+          <p className="mt-6 mb-4">Recent Creations</p>
+          {creations.map((item, index) => (
+            <CreationItems key={index} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

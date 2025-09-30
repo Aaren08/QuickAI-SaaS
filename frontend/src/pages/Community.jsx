@@ -138,7 +138,7 @@ const Community = () => {
       </div>
     </div>
   ) : (
-    <div className="absolute top-1/2 left-1/2 w-10 h-10 border-4 border-t-black border-gray-300 rounded-full animate-spin"></div>
+    <div className="absolute top-1/2 left-1/2 w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
   );
 };
 
