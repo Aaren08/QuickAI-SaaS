@@ -126,9 +126,9 @@ const Community = () => {
                 <HeartLike
                   onClick={() => imageLike(creation.id)}
                   className={`cursor-pointer ${
-                    creation.likes.includes(user.id)
-                      ? "fill-red-500 text-red-600"
-                      : "text-white"
+                    creation.likes.includes(user.id.toString())
+                      ? "text-red-500"
+                      : "text-black"
                   }`}
                 />
               </div>
