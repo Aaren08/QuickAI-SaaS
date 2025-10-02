@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { motion as Motion } from "motion/react";
 import { assets } from "../assets/assets.js";
 const Navbar = () => {
   const navigate = useNavigate();
@@ -8,7 +9,12 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
 
   return (
-    <div className="fixed z-5 w-full flex items-center justify-between backdrop-blur-2xl py-3 px-4 xl:px-32 sm:px-20 ">
+    <Motion.div
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="fixed z-5 w-full flex items-center justify-between backdrop-blur-2xl py-3 px-4 xl:px-32 sm:px-20 "
+    >
       <img
         src={assets.logo}
         alt="logo"
@@ -31,7 +37,7 @@ const Navbar = () => {
           <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transform transition-transform duration-300 group-hover:translate-x-1" />
         </button>
       )}
-    </div>
+    </Motion.div>
   );
 };
 

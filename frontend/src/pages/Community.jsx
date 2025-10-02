@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { toast } from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import HeartLike from "../components/HeartLike.jsx";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
@@ -102,12 +103,25 @@ const Community = () => {
 
   return !loading ? (
     <div className="flex flex-1 flex-col gap-4 p-6 h-full">
-      <span className="text-3xl w-fit font-semibold bg-gradient-to-r from-orange-400 to-indigo-600 bg-clip-text text-transparent">
+      <Motion.span
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="text-3xl w-fit font-semibold bg-gradient-to-r from-orange-400 to-indigo-600 bg-clip-text text-transparent"
+      >
         Creations
-      </span>
-      <div className="bg-white h-full w-full rounded-xl overflow-y-scroll">
+      </Motion.span>
+      <Motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="bg-white h-full w-full rounded-xl overflow-y-scroll"
+      >
         {creations.map((creation, index) => (
-          <div
+          <Motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 * index }}
             key={index}
             className="relative group inline-block pl-3 pt-3 w-full sm:max-w-1/2 lg:max-w-1/3"
           >
@@ -133,9 +147,9 @@ const Community = () => {
                 />
               </div>
             </div>
-          </div>
+          </Motion.div>
         ))}
-      </div>
+      </Motion.div>
     </div>
   ) : (
     <div className="absolute top-1/2 left-1/2 w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>

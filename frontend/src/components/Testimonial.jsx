@@ -1,3 +1,4 @@
+import { motion as Motion } from "motion/react";
 import { assets } from "../assets/assets.js";
 
 const Testimonial = () => {
@@ -32,16 +33,35 @@ const Testimonial = () => {
   ];
 
   return (
-    <div className="px-4 sm:px-20 xl:px-32 py-16">
-      <div className="text-center">
+    <Motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      className="px-4 sm:px-20 xl:px-32 py-16"
+    >
+      <Motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.3 }}
+        className="text-center"
+      >
         <h2 className="text-[42px] font-semibold">Loved by Creators</h2>
-        <p className="text-gray-500 max-w-lg mx-auto">
+        <Motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="text-gray-500 max-w-lg mx-auto"
+        >
           Don't just take our word for it. Here's what our users are saying.
-        </p>
-      </div>
+        </Motion.p>
+      </Motion.div>
       <div className="flex flex-wrap mt-10 justify-center">
         {dummyTestimonialData.map((testimonial, index) => (
-          <div
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: index * 0.2, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.3 }}
             key={index}
             className="p-8 m-4 max-w-xs rounded-lg bg-[#FDFDFE] shadow-lg border border-gray-100 hover:-translate-y-1 transition duration-300 cursor-pointer"
           >
@@ -76,10 +96,10 @@ const Testimonial = () => {
                 <p className="text-xs text-gray-500">{testimonial.title}</p>
               </div>
             </div>
-          </div>
+          </Motion.div>
         ))}
       </div>
-    </div>
+    </Motion.div>
   );
 };
 

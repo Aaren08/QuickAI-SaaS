@@ -1,25 +1,46 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "react-hot-toast";
+import { motion as Motion } from "motion/react";
 import { AiToolsData } from "../assets/assets.js";
 
 const AiTools = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   return (
-    <div className="px-4 sm:px-20 xl:px-32 my-30">
-      <div className="text-center">
+    <Motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+      className="px-4 sm:px-20 xl:px-32 my-30"
+    >
+      <Motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.3 }}
+        className="text-center"
+      >
         <h2 className="text-3xl sm:text-4xl font-semibold">
           Powerful AI Tools
         </h2>
-        <p className="mt-4 text-gray-500 max-w-3xl mx-auto text-lg">
+        <Motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="mt-4 text-gray-500 max-w-3xl mx-auto text-lg"
+        >
           Everything you need to create, enhance and optimize your content with
           cutting-edge AI technology.
-        </p>
-      </div>
+        </Motion.p>
+      </Motion.div>
 
       {/* AI TOOLS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 m-auto max-w-6xl px-4 xl:px-0 sm:px-6">
+      <Motion.div
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10 m-auto max-w-6xl px-4 xl:px-0 sm:px-6"
+      >
         {AiToolsData.map((tool, index) => (
           <div
             key={index}
@@ -44,8 +65,8 @@ const AiTools = () => {
             </p>
           </div>
         ))}
-      </div>
-    </div>
+      </Motion.div>
+    </Motion.div>
   );
 };
 

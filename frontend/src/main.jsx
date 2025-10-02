@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { MotionConfig } from "motion/react";
 import App from "./App.jsx";
 import "./index.css";
 
@@ -12,7 +13,9 @@ if (!PUBLISHABLE_KEY) {
 createRoot(document.getElementById("root")).render(
   <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
     <BrowserRouter>
-      <App />
+      <MotionConfig viewport={{ once: true }}>
+        <App />
+      </MotionConfig>
     </BrowserRouter>
   </ClerkProvider>
 );

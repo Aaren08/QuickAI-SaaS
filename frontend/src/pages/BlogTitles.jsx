@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 import { toast } from "react-hot-toast";
 import Markdown from "react-markdown";
+import { motion as Motion } from "motion/react";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL;
 
@@ -55,7 +56,10 @@ const BlogTitles = () => {
   return (
     <div className="h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700">
       {/* LEFT COLUMN */}
-      <form
+      <Motion.form
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5 }}
         onSubmit={onSubmitHandler}
         className="w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200"
       >
@@ -100,10 +104,15 @@ const BlogTitles = () => {
           )}
           Generate title
         </button>
-      </form>
+      </Motion.form>
 
       {/* RIGHT COLUMN */}
-      <div className="w-full flex flex-col max-w-lg min-h-96 p-4 bg-white rounded-lg border border-gray-200">
+      <Motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="w-full flex flex-col max-w-lg min-h-96 p-4 bg-white rounded-lg border border-gray-200"
+      >
         <div className="flex items-center gap-3">
           <Hash className="w-5 h-5 text-[#8e37eb]" />
           <h1 className="text-xl font-semibold">Generated Titles</h1>
@@ -123,7 +132,7 @@ const BlogTitles = () => {
             </div>
           </div>
         )}
-      </div>
+      </Motion.div>
     </div>
   );
 };

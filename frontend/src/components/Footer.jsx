@@ -1,19 +1,50 @@
-import { assets } from "../assets/assets";
+import { motion as Motion } from "motion/react";
+import { assets } from "../assets/assets.js";
 
 const Footer = () => {
   return (
-    <footer className="px-6 md:px-16 lg:px-24 xl:px-32 pt-18 w-full text-gray-500">
-      <div className="flex flex-col md:flex-row justify-between w-full gap-10 border-b border-gray-500/30 pb-6">
-        <div className="md:max-w-96">
+    <Motion.footer
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      className="px-6 md:px-16 lg:px-24 xl:px-32 pt-18 w-full text-gray-500"
+    >
+      <Motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="flex flex-col md:flex-row justify-between w-full gap-10 border-b border-gray-500/30 pb-6"
+      >
+        <Motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="md:max-w-96"
+        >
           <img className="h-9" src={assets.logo} alt="logo" />
-          <p className="mt-6 text-sm">
+          <Motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-6 text-sm"
+          >
             Experience the power of AI with QuickAi. <br />
             Transform your content creation with our suite of premium AI tools.
             Write articles, generate images and enhance your workflow.
-          </p>
-        </div>
-        <div className="flex-1 flex items-start md:justify-end gap-20">
-          <div>
+          </Motion.p>
+        </Motion.div>
+
+        <Motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex-1 flex items-start md:justify-end gap-20"
+        >
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
             <h2 className="font-semibold mb-5 text-gray-800">Company</h2>
             <ul className="text-sm space-y-2">
               <li>
@@ -29,8 +60,13 @@ const Footer = () => {
                 <a href="#">Privacy policy</a>
               </li>
             </ul>
-          </div>
-          <div>
+          </Motion.div>
+
+          <Motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
             <h2 className="font-semibold text-gray-800 mb-5">
               Subscribe to our newsletter
             </h2>
@@ -50,14 +86,19 @@ const Footer = () => {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <p className="pt-4 text-center text-xs md:text-sm pb-5">
+          </Motion.div>
+        </Motion.div>
+      </Motion.div>
+      <Motion.p
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+        className="pt-4 text-center text-xs md:text-sm pb-5"
+      >
         Copyright 2025 © <a href="https://prebuiltui.com">QuickAI</a>. All
         Rights Reserved.
-      </p>
-    </footer>
+      </Motion.p>
+    </Motion.footer>
   );
 };
 
